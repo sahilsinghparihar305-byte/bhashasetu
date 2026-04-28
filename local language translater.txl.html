@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BhashaSetu: Local Language Translator & Form Filler | AI Powered</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f7 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .tagline {
+            color: #2c3e66;
+            font-weight: 500;
+            font-size: 1.1rem;
+            background: rgba(255,255,240,0.7);
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* main card */
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2b48;
+            border-left: 6px solid #2a6f9c;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .input-panel {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .output-panel {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        /* language & controls */
+        .lang-control {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+            align-items: center;
+        }
+
+        .lang-select {
+            background: #f0f4f9;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #ccd7e6;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        select, button {
+            cursor: pointer;
+        }
+
+        select {
+            background: white;
+            border: 1px solid #bdc4d0;
+            padding: 0.4rem 0.9rem;
+            border-radius: 28px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .mic-btn {
+            background: #2c5f8a;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 60px;
+            font-weight: bold;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .mic-btn:hover {
+            background: #1f4465;
+            transform: scale(0.97);
+        }
+
+        .mic-btn.listening {
+            background: #e34d4d;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(227,77,77,0.6); }
+            70% { box-shadow: 0 0 0 8px rgba(227,77,77,0); }
+            100% { box-shadow: 0 0 0 0 rgba(227,77,77,0); }
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border-radius: 1.2rem;
+            border: 1px solid #cad2db;
+            background: #fefefe;
+            font-family: 'Segoe UI', 'Noto Sans', system-ui;
+            resize: vertical;
+            margin-top: 0.5rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #2a6f9c;
+            box-shadow: 0 0 0 3px rgba(42,111,156,0.2);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 20px;
+            background: #eef3fc;
+            padding: 0.8rem 1.2rem;
+            border-radius: 60px;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .generate-btn {
+            background: linear-gradient(95deg, #1f5e3a, #2c7a4b);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.8rem;
+            border-radius: 48px;
+            font-weight: bold;
+            font-size: 1rem;
+            width: 100%;
+            transition: 0.2s;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .generate-btn:disabled {
+            background: #9aaebf;
+            cursor: not-allowed;
+        }
+
+        .api-section {
+            background: #f8fafd;
+            border-radius: 1.5rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1rem;
+            border: 1px solid #dce5ef;
+        }
+
+        .api-key-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .api-key-row input {
+            flex: 3;
+            padding: 0.6rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #cbd5e1;
+            font-family: monospace;
+        }
+
+        .small-btn {
+            background: #3b6e8b;
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+        }
+
+        .output-box {
+            background: #fbfef9;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            border: 1px solid #d0dee9;
+            min-height: 280px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Segoe UI', system-ui;
+        }
+
+        .copy-btn {
+            background: #2c5a7a;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            margin-top: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2a6f9c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: #3d5a73;
+        }
+
+        hr {
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #2c3e50;
+            margin-top: 2rem;
+        }
+        @media (max-width: 760px) {
+            .card { padding: 1.2rem; }
+            .hero h1 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1><i class="fas fa-language"></i> BhashaSetu <span style="font-size:1.8rem;">📝</span></h1>
+        <div class="tagline">🎙️ अपनी भाषा में बोलें, AI बनाए पेशेवर English letter / Form (हिंदी, बांग्ला, और भी)</div>
+        <p style="margin-top: 8px; color:#2c3e66;">सरकारी फॉर्म या एप्लिकेशन अब बिना डर के भरें – Local Language → Professional English</p>
+    </div>
+
+    <div class="card">
+        <div class="flex-row">
+            <!-- INPUT SECTION -->
+            <div class="input-panel">
+                <div class="card-title">
+                    <i class="fas fa-microphone-alt"></i> 1. आवाज / टेक्स्ट (Local Language)
+                </div>
+                <div class="lang-control">
+                    <div class="lang-select">
+                        <i class="fas fa-globe"></i> भाषा चुनें:
+                        <select id="voiceLangSelect">
+                            <option value="hi-IN">हिन्दी (Hindi)</option>
+                            <option value="bn-IN">বাংলা (Bengali)</option>
+                            <option value="mr-IN">मराठी (Marathi)</option>
+                            <option value="ta-IN">தமிழ் (Tamil)</option>
+                            <option value="te-IN">తెలుగు (Telugu)</option>
+                            <option value="gu-IN">ગુજરાતી (Gujarati)</option>
+                            <option value="en-IN">English (Hinglish support)</option>
+                        </select>
+                    </div>
+                    <button id="micBtn" class="mic-btn"><i class="fas fa-microphone"></i> बोलें (Speech)</button>
+                </div>
+                <textarea id="inputText" rows="5" placeholder="उदाहरण: मुझे स्कूल में admission के लिए application लिखनी है। मेरा नाम राहुल है और मैं कक्षा 8 में हूँ।&#10;&#10;या बांग्ला: আমি একটি সরকারি চাকরির জন্য আবেদনপত্র লিখতে চাই।"></textarea>
+                <div class="mode-selector">
+                    <div class="mode-option">
+                        <input type="radio" name="outputMode" id="modeLetter" value="letter" checked> 
+                        <label for="modeLetter"><i class="fas fa-file-alt"></i> 📄 Professional Letter / Application</label>
+                    </div>
+                    <div class="mode-option">
+                        <input type="radio" name="outputMode" id="modeForm" value="form"> 
+                        <label for="modeForm"><i class="fas fa-table-list"></i> 📋 Form Filler (Structured Data / Fields)</label>
+                    </div>
+                </div>
+                <button id="generateBtn" class="generate-btn"><i class="fas fa-robot"></i> AI से बनाएं → English Output</button>
+                <div class="api-section">
+                    <div style="font-weight:600; margin-bottom: 8px;"><i class="fas fa-key"></i> 🔑 OpenAI API Key (GPT-3.5-turbo)</div>
+                    <div class="api-key-row">
+                        <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off">
+                        <button id="saveKeyBtn" class="small-btn">Save Key</button>
+                        <button id="clearKeyBtn" class="small-btn" style="background:#6c757d;">Clear</button>
+                    </div>
+                    <div class="status-msg" id="apiStatus">⚡ अपनी OpenAI key डालें (Get from platform.openai.com). Key सिर्फ आपके ब्राउज़र में रहेगी।</div>
+                </div>
+            </div>
+
+            <!-- OUTPUT SECTION -->
+            <div class="output-panel">
+                <div class="card-title">
+                    <i class="fas fa-file-signature"></i> 2. AI Generated English Output
+                </div>
+                <div class="output-box" id="outputBox">
+                    <span style="color:#7f8c8d;">✨ आपका पेशेवर अंग्रेजी letter या form यहाँ दिखेगा...</span>
+                </div>
+                <button id="copyBtn" class="copy-btn"><i class="far fa-copy"></i> कॉपी करें</button>
+                <div id="loaderIndicator" style="margin-top: 12px; min-height: 32px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="background: #eef2fa;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+            <div><i class="fas fa-lightbulb"></i> <strong>कैसे उपयोग करें?</strong> 🔹 1. भाषा चुनें और माइक से बोलें या टेक्स्ट लिखें (हिंदी/बांग्ला/मराठी आदि) <br>
+            🔹 2. मोड चुनें: "Letter" → पेशेवर English एप्लिकेशन/पत्र; "Form Filler" → AI आपकी जानकारी से फॉर्म के fields भरेगा (JSON / structured) <br>
+            🔹 3. OpenAI API key डालें (Free trial possible) और Generate दबाएं। AI आपकी local language को professional English में बदलता है।</div>
+            <div><i class="fab fa-readme"></i> Example: "मुझे बैंक में नया खाता खोलने के लिए आवेदन चाहिए" → AI तुरंत English letter देगा।</div>
+        </div>
+    </div>
+    <footer>
+        🌟 AI Powered • Voice सपोर्ट हिंदी/बांग्ला/तमिल/तेलुगु • Data सुरक्षित (OpenAI API) • कोई डेटा सेव नहीं
+    </footer>
+</div>
+
+<script>
+    // ------------------- DOM Elements -------------------
+    const inputTextarea = document.getElementById('inputText');
+    const micBtn = document.getElementById('micBtn');
+    const voiceLangSelect = document.getElementById('voiceLangSelect');
+    const generateBtn = document.getElementById('generateBtn');
+    const outputBox = document.getElementById('outputBox');
+    const copyBtn = document.getElementById('copyBtn');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const saveKeyBtn = document.getElementById('saveKeyBtn');
+    const clearKeyBtn = document.getElementById('clearKeyBtn');
+    const apiStatusSpan = document.getElementById('apiStatus');
+    const loaderDiv = document.getElementById('loaderIndicator');
+    const modeLetter = document.getElementById('modeLetter');
+    const modeForm = document.getElementById('modeForm');
+
+    // global recognition var
+    let recognition = null;
+    let isListening = false;
+
+    // ---------- LocalStorage for API Key ----------
+    function loadApiKey() {
+        const saved = localStorage.getItem('openai_api_key');
+        if (saved) {
+            apiKeyInput.value = saved;
+            apiStatusSpan.innerHTML = '✅ API Key loaded from secure storage. Ready to generate!';
+            apiStatusSpan.style.color = '#1f5e3a';
+        } else {
+            apiStatusSpan.innerHTML = '⚠️ OpenAI API Key missing. Please enter your key (starts with sk-). Get from platform.openai.com/api-keys';
+            apiStatusSpan.style.color = '#b34e1a';
+        }
+    }
+    function saveApiKey() {
+        const key = apiKeyInput.value.trim();
+        if (key && (key.startsWith('sk-') || key.includes('-'))) {
+            localStorage.setItem('openai_api_key', key);
+            apiStatusSpan.innerHTML = '✅ API Key saved! You can now generate professional translations.';
+            apiStatusSpan.style.color = '#1f5e3a';
+        } else if (key.length > 5) {
+            localStorage.setItem('openai_api_key', key);
+            apiStatusSpan.innerHTML = '✅ API Key saved (custom).';
+        } else {
+            apiStatusSpan.innerHTML = '⚠️ Invalid key (should not be empty). Saved anyway?';
+            if(key) localStorage.setItem('openai_api_key', key);
+        }
+    }
+    function clearApiKey() {
+        localStorage.removeItem('openai_api_key');
+        apiKeyInput.value = '';
+        apiStatusSpan.innerHTML = '🔑 API Key cleared. Please add your key to use AI.';
+        apiStatusSpan.style.color = '#b34e1a';
+    }
+    saveKeyBtn.addEventListener('click', saveApiKey);
+    clearKeyBtn.addEventListener('click', clearApiKey);
+    loadApiKey();
+
+    // ---------- Speech Recognition Setup (Web Speech API) ----------
+    function initSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            micBtn.disabled = true;
+            micBtn.title = "Your browser doesn't support speech recognition";
+            micBtn.style.opacity = 0.5;
+            apiStatusSpan.innerHTML += " ⚠️ Speech not supported in this browser.";
+            return null;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recog = new SpeechRecognition();
+        recog.continuous = false;
+        recog.interimResults = false;
+        recog.lang = voiceLangSelect.value; // dynamic
+        return recog;
+    }
+
+    function startListening() {
+        if (recognition) {
+            try {
+                recognition.abort();
+            } catch(e) {}
+        }
+        recognition = initSpeechRecognition();
+        if (!recognition) return;
+        recognition.lang = voiceLangSelect.value;
+        recognition.start();
+        isListening = true;
+        micBtn.classList.add('listening');
+        micBtn.innerHTML = '<i class="fas fa-stop-circle"></i> सुन रहा हूँ...';
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            inputTextarea.value = transcript;
+            micBtn.classList.remove('listening');
+            micBtn.innerHTML = '<i class="fas fa-microphone"></i> बोलें (Speech)';
+            isListening = false;
+        };
+        recognition.onerror = (event) => {
+            console.error("Speech error", event.error);
+            micBtn.classList.remove('listening');
+            micBtn.innerHTML = '<i class="fas fa-microphone"></i> बोलें (Speech)';
+            isListening = false;
+            apiStatusSpan.innerHTML = `🎤 Error: ${event.error}. Try again or type manually.`;
+            setTimeout(() => { if(apiStatusSpan.innerHTML.includes('Error')) loadApiKey(); }, 2000);
+        };
+        recognition.onend = () => {
+            if (isListening) {
+                micBtn.classList.remove('listening');
+                micBtn.innerHTML = '<i class="fas fa-microphone"></i> बोलें (Speech)';
+                isListening = false;
+            }
+        };
+    }
+
+    micBtn.addEventListener('click', () => {
+        if (isListening) {
+            if (recognition) recognition.abort();
+            micBtn.classList.remove('listening');
+            micBtn.innerHTML = '<i class="fas fa-microphone"></i> बोलें (Speech)';
+            isListening = false;
+        } else {
+            startListening();
+        }
+    });
+
+    // update recognition language on select change (for next session)
+    voiceLangSelect.addEventListener('change', () => {
+        if (recognition && !isListening) {
+            recognition.lang = voiceLangSelect.value;
+        }
+    });
+
+    // ---------- AI GENERATION (OpenAI) ----------
+    let isGenerating = false;
+    async function callAI(userPrompt, mode) {
+        const apiKey = localStorage.getItem('openai_api_key');
+        if (!apiKey || apiKey.trim() === '') {
+            throw new Error('API_KEY_MISSING: कृपया पहले OpenAI API key सेव करें (Settings में)');
+        }
+        // Build system prompt based on mode
+        let systemInstruction = "";
+        if (mode === 'letter') {
+            systemInstruction = `You are a professional AI assistant that converts informal/local language requests (Hindi, Bengali, Marathi, Hinglish, etc.) into a polished, formal English letter or application. 
+            The user describes what they need in their native language. Your task: Produce a clear, respectful, and professional English letter/application suitable for official or government use. 
+            Format it properly with subject, salutation, body, and closing. Do NOT include extra explanations, only the final letter. Use proper grammar and formal tone.`;
+        } else { // form filler mode
+            systemInstruction = `You are an AI Form Filler assistant. User describes requirements in Indian local language (Hindi/Bengali/etc.) for filling a government or official form. 
+            Based on the description, extract all relevant fields (like name, address, reason, date, etc.) and produce a structured JSON output wit
